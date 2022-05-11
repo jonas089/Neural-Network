@@ -19,15 +19,15 @@ class Neural_Network():
         self.n = n
         self.o = o
         self.p = p
-        print(self.a, self.b, self.c, self.d, self.e, self.f, self.g, self.h, self.i, self.j, self.k, self.l, self.m, self.n, self.o, self.p)
+        #print(self.a, self.b, self.c, self.d, self.e, self.f, self.g, self.h, self.i, self.j, self.k, self.l, self.m, self.n, self.o, self.p)
     def Decide(self, x, y, w, h):
         if x == 0: SL = 0
         else:
             SL = x*self.a + y*self.e + (w-x)*self.i + (h-y)*self.m
-        if x == w: SR = 0
+        if x == w - 1: SR = 0
         else:
             SR = x*self.b + y*self.f + (w-x)*self.j + (h-y)*self.n
-        if y == h: SU = 0
+        if y == h - 1: SU = 0
         else:
             SU = x*self.c + y*self.g + (w-x)*self.k + (h-y)*self.o
         if y == 0: SD = 0
@@ -57,25 +57,39 @@ class Player():
         self.y = self.y + y
         return True
     def is_alive(self, minefield):
+        #print(len(minefield))
         for mine in minefield:
             if mine.x == self.x and mine.y == self.y:
-                print("Player Dead.")
+                #print("Player Dead.")
                 return False
         return True
 class Mine():
     def __init__(self, x, y):
         self.x = x
         self.y = y
+def gen_Mine(x,y):
+    return Mine(x,y)
 class Field():
     def __init__(self, width, height, mines):
         self.width = width
         self.height = height
         self.mines = mines
+        self.minefield = []
+        self.is_mine = []
     def plant_mines(self):
         minefield = []
         for i in range(0, self.mines):
             minefield.append(len(minefield))
-            minefield[len(minefield) - 1] = Mine(random.randint(1, self.width), random.randint(1, self.height))
+            while True:
+                m = gen_Mine(random.randint(1, self.width), random.randint(1, self.height))
+                if [m.x, m.y] in self.is_mine:
+                    pass
+                else:
+                    self.is_mine.append(len(self.is_mine))
+                    self.is_mine[len(self.is_mine) - 1] = [m.x, m.y]
+                    break
+            minefield[len(minefield) - 1] = m
+        self.minefield = minefield
         return minefield
 def Game(f,p,minefield,n):
     rounds = 0
@@ -96,7 +110,7 @@ def Game(f,p,minefield,n):
         minefield.append(len(minefield))
         minefield[len(minefield) - 1] = spawn_mine
         if p.is_alive(minefield) == False:
-            print("Game over: " + str(rounds) + ' Rounds.')
+            #print("Game over: " + str(rounds) + ' Rounds.')
             break
         else:
             rounds += 1
@@ -106,12 +120,19 @@ def Game(f,p,minefield,n):
             #print("Mine position: " + str(mine.x) + ':' + str(mine.y))
     return rounds
 res = []
-for i in range(0, 100):
-    f = Field(10,10,9)
-    p = Player(0,0,f.width,f.height)
-    minefield = f.plant_mines()
+f = Field(3,3,3)
+minefield = f.plant_mines()
+
+for mine in minefield:
+    print("Mine:" + str(mine.x) + ':' + str(mine.y))
+wait = input("Enter... ")
+timestamp = time.time()
+simcount = 0
+while((time.time()-timestamp) < 60*3):
     n = Neural_Network(tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize())
+    p = Player(1,1,f.width,f.height)
     r = Game(f,p,minefield,n)
+    simcount += 1
     res.append(len(res))
     res[len(res) - 1] = [r, n]
 
@@ -122,3 +143,4 @@ for i in range(0, len(res)):
         best = res[i][0]
         best_index = i
 print(res[best_index])
+print("Number of simulations: " + str(simcount))
