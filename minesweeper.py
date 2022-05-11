@@ -21,18 +21,18 @@ class Neural_Network():
         self.p = p
         #print(self.a, self.b, self.c, self.d, self.e, self.f, self.g, self.h, self.i, self.j, self.k, self.l, self.m, self.n, self.o, self.p)
     def Decide(self, x, y, w, h):
-        if x == 0: SL = 0
+        if x == 1: SL = 0
         else:
-            SL = x*self.a + y*self.e + (w-x)*self.i + (h-y)*self.m
-        if x == w - 1: SR = 0
+            SL = x*self.a + y*self.e# + (w-x)*self.i + (h-y)*self.m
+        if x == w: SR = 0
         else:
-            SR = x*self.b + y*self.f + (w-x)*self.j + (h-y)*self.n
-        if y == h - 1: SU = 0
+            SR = x*self.b + y*self.f #+ (w-x)*self.j + (h-y)*self.n
+        if y == h: SU = 0
         else:
-            SU = x*self.c + y*self.g + (w-x)*self.k + (h-y)*self.o
-        if y == 0: SD = 0
+            SU = x*self.c + y*self.g #+ (w-x)*self.k + (h-y)*self.o
+        if y == 1: SD = 0
         else:
-            SD = x*self.d + y*self.h + (w-x)*self.l + (h-y)*self.p
+            SD = x*self.d + y*self.h #+ (w-x)*self.l + (h-y)*self.p
         weights = [SL,SR,SU,SD]
         D = weights[0]
         index = 0
@@ -128,7 +128,8 @@ for mine in minefield:
 wait = input("Enter... ")
 timestamp = time.time()
 simcount = 0
-while((time.time()-timestamp) < 60*3):
+for i in range(0, 1000000):
+    #print(int(time.time() - timestamp))
     n = Neural_Network(tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize())
     p = Player(1,1,f.width,f.height)
     r = Game(f,p,minefield,n)
