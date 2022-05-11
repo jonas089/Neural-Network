@@ -19,20 +19,21 @@ class Neural_Network():
         self.n = n
         self.o = o
         self.p = p
+        self.track = []
         #print(self.a, self.b, self.c, self.d, self.e, self.f, self.g, self.h, self.i, self.j, self.k, self.l, self.m, self.n, self.o, self.p)
     def Decide(self, x, y, w, h):
         if x == 1: SL = 0
         else:
-            SL = x*self.a + y*self.e# + (w-x)*self.i + (h-y)*self.m
+            SL = x*self.a + y*self.e + (w-x)*self.i + (h-y)*self.m
         if x == w: SR = 0
         else:
-            SR = x*self.b + y*self.f #+ (w-x)*self.j + (h-y)*self.n
+            SR = x*self.b + y*self.f + (w-x)*self.j + (h-y)*self.n
         if y == h: SU = 0
         else:
-            SU = x*self.c + y*self.g #+ (w-x)*self.k + (h-y)*self.o
+            SU = x*self.c + y*self.g + (w-x)*self.k + (h-y)*self.o
         if y == 1: SD = 0
         else:
-            SD = x*self.d + y*self.h #+ (w-x)*self.l + (h-y)*self.p
+            SD = x*self.d + y*self.h + (w-x)*self.l + (h-y)*self.p
         weights = [SL,SR,SU,SD]
         D = weights[0]
         index = 0
@@ -91,25 +92,37 @@ class Field():
             minefield[len(minefield) - 1] = m
         self.minefield = minefield
         return minefield
-def Game(f,p,minefield,n):
+def Game(f,p,n):
     rounds = 0
     while True:
         D = n.Decide(p.x,p.y,f.width,f.height) #0:left,1:right,2:up,3:down
         if D == 0:
             p.move(-1,0)
+            n.track.append(len(n.track))
+            n.track[len(n.track) - 1] = [-1,0]
             spawn_mine = Mine(p.x + 1, p.y)
-        if D == 1:
+        elif D == 1:
             p.move(1,0)
+            n.track.append(len(n.track))
+            n.track[len(n.track) - 1] = [1,0]
             spawn_mine = Mine(p.x - 1, p.y)
-        if D == 2:
+        elif D == 2:
             p.move(0,1)
             spawn_mine = Mine(p.x, p.y - 1)
-        if D == 3:
+            n.track.append(len(n.track))
+            n.track[len(n.track) - 1] = [0,1]
+        elif D == 3:
             p.move(0,-1)
+            n.track.append(len(n.track))
+            n.track[len(n.track) - 1] = [0,-1]
             spawn_mine = Mine(p.x, p.y + 1)
-        minefield.append(len(minefield))
-        minefield[len(minefield) - 1] = spawn_mine
-        if p.is_alive(minefield) == False:
+        else:
+            print("Invalid value for D: " + str(D))
+        f.minefield.append(len(f.minefield))
+        f.minefield[len(f.minefield) - 1] = spawn_mine
+        #print(len(f.minefield))
+        #time.sleep(1)
+        if p.is_alive(f.minefield) == False:
             #print("Game over: " + str(rounds) + ' Rounds.')
             break
         else:
@@ -121,27 +134,33 @@ def Game(f,p,minefield,n):
     return rounds
 res = []
 f = Field(3,3,3)
-minefield = f.plant_mines()
+f.plant_mines()
 
-for mine in minefield:
+for mine in f.minefield:
     print("Mine:" + str(mine.x) + ':' + str(mine.y))
 wait = input("Enter... ")
 timestamp = time.time()
 simcount = 0
 for i in range(0, 1000000):
     #print(int(time.time() - timestamp))
+
+    #print("Minefield: " + str(len(f.minefield)))
     n = Neural_Network(tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize())
     p = Player(1,1,f.width,f.height)
-    r = Game(f,p,minefield,n)
-    simcount += 1
+    r = Game(f,p,n)
     res.append(len(res))
-    res[len(res) - 1] = [r, n]
-
+    res[len(res) - 1] = [r, n, f.minefield]
+    f.minefield = f.minefield[:3]
+    simcount += 1
 best = 0
 best_index = 0
 for i in range(0, len(res)):
+    #print(res)
     if res[i][0] > best:
         best = res[i][0]
         best_index = i
 print(res[best_index])
 print("Number of simulations: " + str(simcount))
+print("Track: " + str(res[best_index][1].track))
+for mine in res[best_index][2]:
+    print("Mine: " + str(mine.x) + ' : ' + str(mine.y))
