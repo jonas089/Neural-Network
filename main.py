@@ -10,14 +10,12 @@ class Neural_Network():
     def Decide(self, EA, EN):
         weight_EA = EA * self.a + EN * self.c
         weight_EN = EA * self.b + EN * self.d
-        #return [weight_EA, weight_EN]
         if weight_EA > weight_EN:
-            return "EA"
+            return "Eat"
         elif weight_EN > weight_EA:
-            return "EN"
+            return "Nest"
         else:
             return "DRAW"
-
 class Simulation():
     def __init__(self, EA, EN, creatures, neural_network):
         self.EA = EA
@@ -28,9 +26,9 @@ class Simulation():
         rounds = 0
         while self.creatures > 0:
             decision = self.neural_network.Decide(self.EA, self.EN)
-            if decision == "EA":
+            if decision == "Eat":
                 self.EA -= 1
-            elif decision == "EN":
+            elif decision == "Nest":
                 self.EA -= 1
                 self.EN += 1
                 self.creatures -= 1
@@ -48,9 +46,8 @@ class Simulation():
         #print("!!! [Generation Survived]: ", str(rounds))
         data.append(len(data))
         data[len(data) - 1] = [len(data) - 1, {'model_a':self.neural_network.a, 'model_b':self.neural_network.b, 'model_c':self.neural_network.c, 'model_d':self.neural_network.d, 'rounds':rounds}]
-for u in range(0, 1000000):
+for u in range(0, 100):
     n = Neural_Network(tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize())
-    s = Simulation(100,0,5,n)
+    s = Simulation(100,100,10,n)
     s.run_simulation()
-#print(data)
 print(tools.best_gen(data))
