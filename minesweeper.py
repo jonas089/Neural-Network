@@ -1,6 +1,7 @@
 import random
 import tools
 import time
+from numba import jit, cuda
 class Neural_Network():
     def __init__(self, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p):
         self.a = a
@@ -132,37 +133,44 @@ def Game(f,p,n):
         #for mine in minefield:
             #print("Mine position: " + str(mine.x) + ':' + str(mine.y))
     return rounds
-res = [0,None,None]
-f = Field(5,5,5)
-f.plant_mines()
 
-for mine in f.minefield:
-    print("Mine:" + str(mine.x) + ':' + str(mine.y))
-wait = input("Enter... ")
-timestamp = time.time()
-simcount = 0
-for i in range(0, 10000000):
-    #print(int(time.time() - timestamp))
-    #if str(i)[len(str(i)) - 1] == '0':
-    #    print(i)
-    #print("Minefield: " + str(len(f.minefield)))
-    n = Neural_Network(tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize())
-    p = Player(1,1,f.width,f.height)
-    r = Game(f,p,n)
-    if r > res[0]:
-        res = [r, n, f.minefield]
-    #res.append(len(res))
-    #res[len(res) - 1] = [r, n, f.minefield]
-    f.minefield = f.minefield[:5]
-    simcount += 1
-best = 0
-best_index = 0
-print(res)
-for mine in res[2]:
-    print("Mine: " + str(mine.x) + ' : ' + str(mine.y))
-print("Track: " + str(res[1].track))
-print("Number of simulations: " + str(simcount))
-print(res[0])
+#@jit(target ="cuda")
+def Run():
+    res = [0,None,None]
+    amount_mines = 5
+    f = Field(5,5,amount_mines)
+    f.plant_mines()
+
+    for mine in f.minefield:
+        print("Mine:" + str(mine.x) + ':' + str(mine.y))
+    wait = input("Enter... ")
+    timestamp = time.time()
+    simcount = 0
+    while (time.time()-timestamp < 60):
+        #print(time.time()-timestamp)
+        #print(int(time.time() - timestamp))
+        #if str(i)[len(str(i)) - 1] == '0':
+        #    print(i)
+        #print("Minefield: " + str(len(f.minefield)))
+        n = Neural_Network(tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize())
+        p = Player(1,1,f.width,f.height)
+        r = Game(f,p,n)
+        if r > res[0]:
+            res = [r, n, f.minefield]
+        #res.append(len(res))
+        #res[len(res) - 1] = [r, n, f.minefield]
+        f.minefield = f.minefield[:amount_mines]
+        simcount += 1
+    best = 0
+    best_index = 0
+    print(res)
+    for mine in res[2]:
+        print("Mine: " + str(mine.x) + ' : ' + str(mine.y))
+    print("Track: " + str(res[1].track))
+    print("Number of simulations: " + str(simcount))
+    print(res[0])
+
+Run()
 #for i in range(0, len(res)):
     #print(res)
 #    if res[i][0] > best:
@@ -173,3 +181,33 @@ print(res[0])
 #print("Track: " + str(res[best_index][1].track))
 #for mine in res[best_index][2]:
 #    print("Mine: " + str(mine.x) + ' : ' + str(mine.y))
+
+''' CUDA example
+from numba import jit, cuda
+import numpy as np
+# to measure exec time
+from timeit import default_timer as timer
+
+# normal function to run on cpu
+def func(a):
+    for i in range(10000000):
+        a[i]+= 1
+
+# function optimized to run on gpu
+@jit(target ="cuda")
+def func2(a):
+    for i in range(10000000):
+        a[i]+= 1
+if __name__=="__main__":
+    n = 10000000
+    a = np.ones(n, dtype = np.float64)
+    b = np.ones(n, dtype = np.float32)
+
+    start = timer()
+    func(a)
+    print("without GPU:", timer()-start)
+
+    start = timer()
+    func2(a)
+    print("with GPU:", timer()-start)
+'''
