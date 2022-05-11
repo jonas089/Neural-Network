@@ -132,7 +132,7 @@ def Game(f,p,n):
         #for mine in minefield:
             #print("Mine position: " + str(mine.x) + ':' + str(mine.y))
     return rounds
-res = []
+res = [0,None,None]
 f = Field(5,5,5)
 f.plant_mines()
 
@@ -141,26 +141,35 @@ for mine in f.minefield:
 wait = input("Enter... ")
 timestamp = time.time()
 simcount = 0
-while((time.time()-timestamp) < 60*5):
+for i in range(0, 10000000):
     #print(int(time.time() - timestamp))
-
+    #if str(i)[len(str(i)) - 1] == '0':
+    #    print(i)
     #print("Minefield: " + str(len(f.minefield)))
     n = Neural_Network(tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize())
     p = Player(1,1,f.width,f.height)
     r = Game(f,p,n)
-    res.append(len(res))
-    res[len(res) - 1] = [r, n, f.minefield]
-    f.minefield = f.minefield[:3]
+    if r > res[0]:
+        res = [r, n, f.minefield]
+    #res.append(len(res))
+    #res[len(res) - 1] = [r, n, f.minefield]
+    f.minefield = f.minefield[:5]
     simcount += 1
 best = 0
 best_index = 0
-for i in range(0, len(res)):
-    #print(res)
-    if res[i][0] > best:
-        best = res[i][0]
-        best_index = i
-print(res[best_index])
-print("Number of simulations: " + str(simcount))
-print("Track: " + str(res[best_index][1].track))
-for mine in res[best_index][2]:
+print(res)
+for mine in res[2]:
     print("Mine: " + str(mine.x) + ' : ' + str(mine.y))
+print("Track: " + str(res[1].track))
+print("Number of simulations: " + str(simcount))
+print(res[0])
+#for i in range(0, len(res)):
+    #print(res)
+#    if res[i][0] > best:
+#        best = res[i][0]
+#        best_index = i
+#print(res[best_index])
+#print("Number of simulations: " + str(simcount))
+#print("Track: " + str(res[best_index][1].track))
+#for mine in res[best_index][2]:
+#    print("Mine: " + str(mine.x) + ' : ' + str(mine.y))
