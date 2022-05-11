@@ -77,10 +77,6 @@ class Field():
             minefield.append(len(minefield))
             minefield[len(minefield) - 1] = Mine(random.randint(1, self.width), random.randint(1, self.height))
         return minefield
-f = Field(10,10,9)
-p = Player(0,0,f.width,f.height)
-minefield = f.plant_mines()
-n = Neural_Network(tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize())
 def Game(f,p,minefield,n):
     rounds = 0
     while True:
@@ -104,8 +100,25 @@ def Game(f,p,minefield,n):
             break
         else:
             rounds += 1
-        time.sleep(1)
-        print("Player position: " + str(p.x) + ':' + str(p.y))
-        for mine in minefield:
-            print("Mine position: " + str(mine.x) + ':' + str(mine.y))
-Game(f,p,minefield,n)
+        #time.sleep(1)
+        #print("Player position: " + str(p.x) + ':' + str(p.y))
+        #for mine in minefield:
+            #print("Mine position: " + str(mine.x) + ':' + str(mine.y))
+    return rounds
+res = []
+for i in range(0, 100):
+    f = Field(10,10,9)
+    p = Player(0,0,f.width,f.height)
+    minefield = f.plant_mines()
+    n = Neural_Network(tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize())
+    r = Game(f,p,minefield,n)
+    res.append(len(res))
+    res[len(res) - 1] = [r, n]
+
+best = 0
+best_index = 0
+for i in range(0, len(res)):
+    if res[i][0] > best:
+        best = res[i][0]
+        best_index = i
+print(res[best_index])
