@@ -133,7 +133,7 @@ def Game(f,p,n):
             #print("Mine position: " + str(mine.x) + ':' + str(mine.y))
     return rounds
 res = []
-f = Field(3,3,3)
+f = Field(5,5,5)
 f.plant_mines()
 
 for mine in f.minefield:
@@ -141,7 +141,7 @@ for mine in f.minefield:
 wait = input("Enter... ")
 timestamp = time.time()
 simcount = 0
-for i in range(0, 1000000):
+while((time.time()-timestamp) < 60*5):
     #print(int(time.time() - timestamp))
 
     #print("Minefield: " + str(len(f.minefield)))
