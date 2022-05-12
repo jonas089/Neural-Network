@@ -69,8 +69,6 @@ class Mine():
     def __init__(self, x, y):
         self.x = x
         self.y = y
-def gen_Mine(x,y):
-    return Mine(x,y)
 class Field():
     def __init__(self, width, height, mines):
         self.width = width
@@ -83,7 +81,7 @@ class Field():
         for i in range(0, self.mines):
             minefield.append(len(minefield))
             while True:
-                m = gen_Mine(random.randint(1, self.width), random.randint(1, self.height))
+                m = Mine(random.randint(1, self.width), random.randint(1, self.height))
                 if [m.x, m.y] in self.is_mine:
                     pass
                 else:
@@ -146,7 +144,7 @@ def Run():
     wait = input("Enter... ")
     timestamp = time.time()
     simcount = 0
-    while (time.time()-timestamp < 60):
+    while (time.time()-timestamp < 5):
         #print(time.time()-timestamp)
         #print(int(time.time() - timestamp))
         #if str(i)[len(str(i)) - 1] == '0':
