@@ -3,14 +3,13 @@ from minesweeper import Player
 from minesweeper import Field
 from minesweeper import Mine
 
-import time
 import tools
+import time
 
 def Play(n,p,f):
     rounds = 0
     while p.is_alive(f.minefield) == True:
         D = n.Decide(p.x,p.y,f.width,f.height)
-
         if D == 0: # Move left
             p.move(-1,0)
             n.track.append(len(n.track))
