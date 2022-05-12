@@ -94,42 +94,40 @@ class Field():
 def Game(f,p,n):
     rounds = 0
     while True:
-        D = n.Decide(p.x,p.y,f.width,f.height) #0:left,1:right,2:up,3:down
-        if D == 0:
+        D = n.Decide(p.x,p.y,f.width,f.height) # 0:left,1:right,2:up,3:down
+
+        if D == 0: # Move left
             p.move(-1,0)
             n.track.append(len(n.track))
             n.track[len(n.track) - 1] = [-1,0]
-            spawn_mine = Mine(p.x + 1, p.y)
-        elif D == 1:
+            new_mine = Mine(p.x + 1, p.y)
+
+        elif D == 1: # Move Right
             p.move(1,0)
             n.track.append(len(n.track))
             n.track[len(n.track) - 1] = [1,0]
-            spawn_mine = Mine(p.x - 1, p.y)
-        elif D == 2:
+            new_mine = Mine(p.x - 1, p.y)
+
+        elif D == 2: # Move Up
             p.move(0,1)
-            spawn_mine = Mine(p.x, p.y - 1)
             n.track.append(len(n.track))
             n.track[len(n.track) - 1] = [0,1]
-        elif D == 3:
+            new_mine = Mine(p.x, p.y - 1)
+        elif D == 3: # Move Down
             p.move(0,-1)
             n.track.append(len(n.track))
             n.track[len(n.track) - 1] = [0,-1]
-            spawn_mine = Mine(p.x, p.y + 1)
+            new_mine = Mine(p.x, p.y + 1)
         else:
-            print("Invalid value for D: " + str(D))
+            print("[Error]: Invalid D: " + str(D))
+            return 0
+
         f.minefield.append(len(f.minefield))
-        f.minefield[len(f.minefield) - 1] = spawn_mine
-        #print(len(f.minefield))
-        #time.sleep(1)
+        f.minefield[len(f.minefield) - 1] = new_mine
         if p.is_alive(f.minefield) == False:
-            #print("Game over: " + str(rounds) + ' Rounds.')
             break
         else:
             rounds += 1
-        #time.sleep(1)
-        #print("Player position: " + str(p.x) + ':' + str(p.y))
-        #for mine in minefield:
-            #print("Mine position: " + str(mine.x) + ':' + str(mine.y))
     return rounds
 
 #@jit(target ="cuda")
@@ -145,18 +143,11 @@ def Run():
     timestamp = time.time()
     simcount = 0
     while (time.time()-timestamp < 5):
-        #print(time.time()-timestamp)
-        #print(int(time.time() - timestamp))
-        #if str(i)[len(str(i)) - 1] == '0':
-        #    print(i)
-        #print("Minefield: " + str(len(f.minefield)))
         n = Neural_Network(tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize())
         p = Player(1,1,f.width,f.height)
         r = Game(f,p,n)
         if r > res[0]:
             res = [r, n, f.minefield]
-        #res.append(len(res))
-        #res[len(res) - 1] = [r, n, f.minefield]
         f.minefield = f.minefield[:amount_mines]
         simcount += 1
     best = 0
@@ -167,45 +158,4 @@ def Run():
     print("Track: " + str(res[1].track))
     print("Number of simulations: " + str(simcount))
     print(res[0])
-
-Run()
-#for i in range(0, len(res)):
-    #print(res)
-#    if res[i][0] > best:
-#        best = res[i][0]
-#        best_index = i
-#print(res[best_index])
-#print("Number of simulations: " + str(simcount))
-#print("Track: " + str(res[best_index][1].track))
-#for mine in res[best_index][2]:
-#    print("Mine: " + str(mine.x) + ' : ' + str(mine.y))
-
-''' CUDA example
-from numba import jit, cuda
-import numpy as np
-# to measure exec time
-from timeit import default_timer as timer
-
-# normal function to run on cpu
-def func(a):
-    for i in range(10000000):
-        a[i]+= 1
-
-# function optimized to run on gpu
-@jit(target ="cuda")
-def func2(a):
-    for i in range(10000000):
-        a[i]+= 1
-if __name__=="__main__":
-    n = 10000000
-    a = np.ones(n, dtype = np.float64)
-    b = np.ones(n, dtype = np.float32)
-
-    start = timer()
-    func(a)
-    print("without GPU:", timer()-start)
-
-    start = timer()
-    func2(a)
-    print("with GPU:", timer()-start)
-'''
+#Run()
