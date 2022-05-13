@@ -44,7 +44,7 @@ def Play(n,p,f):
 
 #@jit(target ="cuda")
 def Train():
-    res = [0,None,None]
+    res = [-1,None,None]
     nr_mines = 5
     f = Field(5,5,nr_mines)
     f.plant_mines()
@@ -53,11 +53,13 @@ def Train():
     wait = input("Enter... ")
     timestamp = time.time()
     simcount = 0
-    while (time.time()-timestamp < 5):
+    while (time.time()-timestamp < 60*1):
         n = Neural_Network(tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize(), tools.randomize())
         p = Player(1,1,f.width,f.height)
         r = Play(n,p,f)
         if r > res[0]:
+            print("RES UPDATED.")
+            print("TIME: " + str(time.time()-timestamp))
             res = [r, n, f.minefield]
         f.minefield = f.minefield[:nr_mines]
         simcount += 1
